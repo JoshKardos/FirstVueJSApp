@@ -1,0 +1,10 @@
+div {
+  text-align: center;
+}
+td {
+  border: 1px solid black;
+}
+.photosTable {
+  width: 100%;
+  text-align: center;
+}
