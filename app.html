@@ -14,6 +14,20 @@
     <input type="text" v-on:input="handleInputChange">
     <button :disabled="numPhotosToShow >= 5000" v-on:click="numPhotosToShow += 25">Add 25</button>
     <button :disabled="0 >= numPhotosToShow" v-on:click="numPhotosToShow -= 25">Remove 25</button>
+    <div class="filtersTableContainer">
+      <table class="filtersTable">
+        <tr>
+          <th>Choose an album to filter</th>
+        </tr>
+        <tr v-for="album in albums">
+          <td>
+            <button v-on:click="setFilter(album.title)">
+              {{filters.includes(album.title) ? 'X' : ''}}
+            </button>{{album.title}}
+          </td>
+        </tr>
+      </table>
+    </div>
     <table class="photosTable">
       <tr>
         <th v-on:click="sort('albumId')">Album Id {{sortedByKey === 'albumId' ? sortDirectionDescending ? '[DESC]' : '[ASC]' : null}}</th>
@@ -21,7 +35,7 @@
         <th v-on:click="sort('title')">Title {{sortedByKey === 'title' ? sortDirectionDescending ? '[DESC]' : '[ASC]' : null}}</th>
         <th>Photo</th>
       </tr>
-      <tr v-for="photo in photos.filter(photo => photo.title.includes(searchText) || photo.albumTitle.includes(searchText)).slice(0, numPhotosToShow)">
+      <tr v-for="photo in photos.filter(photo => filters.includes(photo.albumTitle) || filters.length === 0).filter(photo => photo.title.includes(searchText) || photo.albumTitle.includes(searchText)).slice(0, numPhotosToShow)">
         <td>{{photo.albumId}}</td>
         <td>{{photo.albumTitle}}</td>
         <td>{{photo.title}}</td>
@@ -36,13 +50,11 @@
         this.loadAlbums()
         this.loadPhotos()
       },
-      updated: function() {
-        console.log(vm.photos.length)
-      },
       data: {
         albums: [],
         photos: [],
         numPhotosToShow: 25,
+        filters: [],
         searchText: '',
         sortDirectionDescending: false,
         sortedByKey: 'albumId'
@@ -50,7 +62,6 @@
       methods: {
         handleInputChange: function(event) {
           vm.searchText = event.target.value
-          // vm.photos = vm.photos.filter(photo => photo.title.includes(searchText) || photo.albumTitle.includes(searchText))
         },
         loadAlbums: function() {
           fetch('https://jsonplaceholder.typicode.com/albums')
@@ -78,6 +89,13 @@
               console.log(error)
             }
           )
+        },
+        setFilter: function(title) {
+          if(vm.filters.includes(title)){
+            vm.filters = vm.filters.filter(filterTitle => title != filterTitle)
+          } else {
+            vm.filters = [ ...vm.filters, title]
+          }
         },
         compare: function(key, a, b) {
           if (a[key] > b[key]) //sort string ascending

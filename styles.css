@@ -8,3 +8,22 @@ td {
   width: 100%;
   text-align: center;
 }
+.filtersTable {
+  text-align: left;
+  background-color: black;
+  color: white;
+  height: 240px;
+  margin: auto;
+}
+.filtersTableContainer {
+  margin-top: 12px;
+  margin-bottom: 12px;
+  overflow-y: scroll;
+  max-height:200px;
+  max-width: 480px;
+  min-width: 320px;
+}
+
+.buttonText {
+  color: black;
+}
